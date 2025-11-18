@@ -9,7 +9,8 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  base: "/", // ✅ ВАЖНО: для красивых URL без # на GitHub Pages
+  // 🔧 ДЕЛАЕМ ОТНОСИТЕЛЬНЫЕ ПУТИ ДЛЯ ASSETS
+  base: "./",
   plugins: [
     react(),
     mode === "development" && componentTagger(),
