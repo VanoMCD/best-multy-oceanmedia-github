@@ -9,8 +9,8 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  // 🔧 ДЕЛАЕМ ОТНОСИТЕЛЬНЫЕ ПУТИ ДЛЯ ASSETS
-  base: "./",
+  // 👇 меняем "./" на путь репозитория
+  base: "/best-multy-oceanmedia-github/",
   plugins: [
     react(),
     mode === "development" && componentTagger(),
