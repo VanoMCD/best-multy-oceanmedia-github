@@ -136,15 +136,15 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
           <Routes>
             {/* Redirect root to detected language */}
             <Route path="/" element={<RootRedirect />} />
-            
+
             {/* Language-specific routes */}
             <Route path="/:lang" element={<LanguageWrapper />} />
-            
-            {/* Catch all - redirect to English */}
+
+            {/* Catch all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
@@ -153,4 +153,3 @@ const App = () => {
   );
 };
 
-export default App;
