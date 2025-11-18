@@ -70,7 +70,7 @@ const detectLanguage = async (): Promise<string> => {
     return browserLang;
   }
 
-    // 2. Check country by IP
+  // 2. Check country by IP
   try {
     const response = await fetch("https://ipapi.co/json/");
     const data = await response.json();
@@ -85,3 +85,80 @@ const detectLanguage = async (): Promise<string> => {
   } catch (error) {
     console.log("Could not detect country, using default language");
   }
+
+  // 3. Default to English
+  return "en";
+};
+
+const LanguageWrapper = () => {
+  const { lang } = useParams<{ lang: string }>();
+  const { i18n, ready } = useTranslation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const changeLang = async () => {
+      if (lang && Object.keys(languages).includes(lang)) {
+        if (i18n.language !== lang) {
+          await i18n.changeLanguage(lang);
+        }
+      }
+    };
+    changeLang();
+  }, [lang, i18n, navigate]);
+
+  // Redirect invalid language codes
+  if (lang && !Object.keys(languages).includes(lang)) {
+    return <Navigate to="/en" replace />;
+  }
+
+  // Don't render until language is loaded
+  if (!ready || i18n.language !== lang) {
+    return null;
+  }
+
+  return <Index />;
+};
+
+const RootRedirect = () => {
+  const [targetLang, setTargetLang] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getLanguage = async () => {
+      const lang = await detectLanguage();
+      setTargetLang(lang);
+    };
+    getLanguage();
+  }, []);
+
+  if (!targetLang) {
+    return null;
+  }
+
+  return <Navigate to={`/${targetLang}`} replace />;
+};
+
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        {/* basename подтянется из vite.config.ts (base) */}
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
+          <Routes>
+            {/* Redirect root to detected language */}
+            <Route path="/" element={<RootRedirect />} />
+
+            {/* Language-specific routes */}
+            <Route path="/:lang" element={<LanguageWrapper />} />
+
+            {/* Catch all */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
+
+export default App;
