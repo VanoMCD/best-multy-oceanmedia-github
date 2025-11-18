@@ -70,6 +70,18 @@ const detectLanguage = async (): Promise<string> => {
     return browserLang;
   }
 
-  // 2. Check country by IP
+    // 2. Check country by IP
   try {
-    const response = await fetch("ht
+    const response = await fetch("https://ipapi.co/json/");
+    const data = await response.json();
+    const countryCode = data.country_code;
+
+    if (countryCode && countryToLanguage[countryCode]) {
+      const langByCountry = countryToLanguage[countryCode];
+      if (availableLanguages.includes(langByCountry)) {
+        return langByCountry;
+      }
+    }
+  } catch (error) {
+    console.log("Could not detect country, using default language");
+  }
